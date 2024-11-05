@@ -36,35 +36,61 @@ class _ProdutosScreenState extends State<ProdutosScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Produtos'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
       ),
-      body: ListView.builder(
-        itemCount: produtos.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(produtos[index].descricao),
-            subtitle: Text(
-                'Estoque: ${produtos[index].estoque} - Preço: ${produtos[index].preco}'),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () async {
-                await apiService.deleteProduto(produtos[index].id);
-                fetchProdutos();
-              },
-            ),
-            onTap: () async {
-              bool result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      AddEditProdutoScreen(produto: produtos[index]),
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+          itemCount: produtos.length,
+          itemBuilder: (context, index) {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 4,
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      title: Text(
+                        produtos[index].descricao,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        'Estoque: ${produtos[index].estoque} - Preço: ${produtos[index].preco}',
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () async {
+                          await apiService.deleteProduto(produtos[index].id);
+                          fetchProdutos();
+                        },
+                      ),
+                      onTap: () async {
+                        bool result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AddEditProdutoScreen(produto: produtos[index]),
+                          ),
+                        );
+                        if (result) {
+                          fetchProdutos();
+                        }
+                      },
+                    ),
+                  ),
                 ),
-              );
-              if (result) {
-                fetchProdutos();
-              }
-            },
-          );
-        },
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Divider(),
+                ),
+              ],
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -78,6 +104,8 @@ class _ProdutosScreenState extends State<ProdutosScreen> {
             fetchProdutos();
           }
         },
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
         child: const Icon(Icons.add),
       ),
     );

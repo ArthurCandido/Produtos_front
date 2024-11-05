@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import '../models/produto.dart';
 import '../services/api_service.dart';
 
@@ -17,7 +19,7 @@ class _AddEditProdutoScreenState extends State<AddEditProdutoScreen> {
 
   late TextEditingController descricaoController;
   late TextEditingController estoqueController;
-  late TextEditingController precoController;
+  late MoneyMaskedTextController precoController;
   late TextEditingController dataController;
 
   @override
@@ -27,8 +29,12 @@ class _AddEditProdutoScreenState extends State<AddEditProdutoScreen> {
         TextEditingController(text: widget.produto?.descricao ?? '');
     estoqueController =
         TextEditingController(text: widget.produto?.estoque.toString());
-    precoController =
-        TextEditingController(text: widget.produto?.preco.toString());
+    precoController = MoneyMaskedTextController(
+      initialValue: widget.produto?.preco ?? 0.0,
+      leftSymbol: 'R\$ ',
+      decimalSeparator: ',',
+      thousandSeparator: '.',
+    );
     dataController = TextEditingController(
         text: widget.produto?.data.toIso8601String().split('T').first);
   }
@@ -62,71 +68,118 @@ class _AddEditProdutoScreenState extends State<AddEditProdutoScreen> {
       appBar: AppBar(
         title: Text(
             widget.produto == null ? 'Adicionar Produto' : 'Editar Produto'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
       ),
+      backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                controller: descricaoController,
-                decoration: const InputDecoration(labelText: 'Descrição'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Por favor, insira a descrição';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: estoqueController,
-                decoration: const InputDecoration(labelText: 'Estoque'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Por favor, insira o estoque';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: precoController,
-                decoration: const InputDecoration(labelText: 'Preço'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Por favor, insira o preço';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: dataController,
-                decoration: InputDecoration(
-                  labelText: 'Data',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context),
-                  ),
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Card(
+                        color: Colors.white,
+                        elevation: 4,
+                        margin: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: <Widget>[
+                              TextFormField(
+                                controller: descricaoController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Descrição',
+                                  border: OutlineInputBorder(),
+                                  prefixIcon: Icon(Icons.description),
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Por favor, insira a descrição';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                controller: estoqueController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Estoque',
+                                  border: OutlineInputBorder(),
+                                  prefixIcon: Icon(Icons.storage),
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Por favor, insira o estoque';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                controller: precoController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Preço',
+                                  border: OutlineInputBorder(),
+                                  prefixIcon: Icon(Icons.attach_money),
+                                ),
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Por favor, insira o preço';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                controller: dataController,
+                                decoration: InputDecoration(
+                                  labelText: 'Data',
+                                  border: const OutlineInputBorder(),
+                                  prefixIcon: const Icon(Icons.calendar_today),
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.calendar_today),
+                                    onPressed: () => _selectDate(context),
+                                  ),
+                                ),
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Por favor, insira a data';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                readOnly: true,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Por favor, insira a data';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     Produto produto = Produto(
                       id: widget.produto?.id ?? 0,
                       descricao: descricaoController.text,
                       estoque: int.parse(estoqueController.text),
-                      preco: double.parse(precoController.value.text),
+                      preco: precoController.numberValue,
                       data: DateTime.parse(dataController.text),
                     );
 
@@ -142,8 +195,8 @@ class _AddEditProdutoScreenState extends State<AddEditProdutoScreen> {
                 },
                 child: Text(widget.produto == null ? 'Adicionar' : 'Salvar'),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
