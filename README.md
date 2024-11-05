@@ -1,16 +1,34 @@
-# produtos_front
+# CRUD Produtos
 
-A new Flutter project.
+Este projeto é um aplicativo Flutter para gerenciar produtos, permitindo adicionar, editar e excluir produtos de um inventário.
 
-## Getting Started
+## Instalação
 
-This project is a starting point for a Flutter application.
+1. Clone o repositório:
+    ```sh
+    git clone https://github.com/seu-usuario/produtos_front.git
+    ```
+2. Navegue até o diretório do projeto:
+    ```sh
+    cd produtos_front
+    ```
+3. Instale as dependências:
+    ```sh
+    flutter pub get
+    ```
 
-A few resources to get you started if this is your first Flutter project:
+## Uso
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. Inicie o aplicativo:
+    ```sh
+    flutter run
+    ```
+2. A tela inicial exibirá a lista de produtos.
+3. Use o botão de adicionar (`+`) para incluir um novo produto.
+4. Toque em um produto para editá-lo.
+5. Use o ícone de lixeira para excluir um produto.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Autor
+
+Arthur Candido  
+Email: [arthurarcelo24@gmail.com](mailto:arthurarcelo24@gmail.com)
