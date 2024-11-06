@@ -6,7 +6,7 @@ Este projeto é um aplicativo Flutter para gerenciar produtos, permitindo adicio
 
 1. Clone o repositório:
     ```sh
-    git clone https://github.com/seu-usuario/produtos_front.git
+    git clone https://github.com/ArthurCandido/Produtos_front.git
     ```
 2. Navegue até o diretório do projeto:
     ```sh
